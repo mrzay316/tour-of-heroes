@@ -1,40 +1,103 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 
-const heroes = [ 
-    { id: 11, name: 'Dr Nice' },
-    { id: 12, name: 'Narco' },
-    { id: 13, name: 'Bombasto' },
-    { id: 14, name: 'Celeritas' },
-    { id: 15, name: 'Magneta' },
-    { id: 16, name: 'RubberMan' },
-    { id: 17, name: 'Dynama' },
-    { id: 18, name: 'Dr IQ' },
-    { id: 19, name: 'Magma' },
-    { id: 20, name: 'Tornado' }
-];
+const useStyles = makeStyles(theme => ({
+    root: {
+        margin: 'auto',
+        width: '70%',
+        maxWidth: 360,
+        padding: '15px',
+        backgroundColor: theme.palette.background.paper,
+    },
+    title: {
+        paddingBottom: '10px'
+    }
+}));
 
-class HeroesList extends Component {
-    constructor(){
-        super();
-        this.state = {
-            heroes : heroes
+
+export default function HeroesList(props) {
+    const classes = useStyles();
+    const [search, setSearch] = useState('');
+    const [selectedHero, setSelectedHero] = useState(false);
+
+    const handleListItemClick = (event, heroID) => {
+        setSelectedHero(heroID);
+    };
+
+    const displayViewDetailsButton = () => {
+        if (selectedHero) {
+            return <Button
+                variant="contained"
+                color="primary"
+                onClick={() => props.onClickViewDetails(selectedHero)}
+                startIcon={<EditIcon />}
+            > Edit details </Button>
         }
     }
 
-    render(){
-        return (
-            <div className="heroesList">
-                <h2>My heroes</h2>
-                <ul>
-                {this.state.heroes.map( hero =>
-                    <li key={hero.id}>
-                        <span className="badge"> {hero.id} </span> {hero.name}
-                    </li>
+    let filteredHeroes = props.heroes.filter(
+        (hero) => {
+            return hero.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+        });
+
+
+    return (
+        <Paper className={classes.root}>
+            <Typography className={classes.title} variant="h4">
+                My Heroes
+            </Typography>
+
+            <TextField
+                id="hero-filter"
+                label="Search for heroes"
+                variant="outlined"
+                onChange={(event) => { setSearch(event.target.value) }}
+            />
+            <List >
+                {filteredHeroes.map(hero =>
+                    <ListItem
+                        button
+                        key={hero.id}
+                        selected={selectedHero === hero.id}
+                        onClick={event => handleListItemClick(event, hero.id)}
+                    >
+                        <ListItemText
+                            primary={hero.name}
+                        />
+                        <ListItemSecondaryAction>
+                            <IconButton onClick={() => { props.onClickDeleteHero(hero.id) }} edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
                 )}
-                </ul>
-            </div>
-        );
-    }
+            </List>
+            {displayViewDetailsButton()}
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={() => props.onClickSaveHero()}
+                startIcon={<AddIcon />}
+            > Add hero </Button>
+        </Paper>
+    )
 }
 
-export default HeroesList;
+HeroesList.propTypes = {
+    heroes: PropTypes.array.isRequired,
+    onClickViewDetails: PropTypes.func
+}
+
