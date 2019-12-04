@@ -1,19 +1,44 @@
 import React from 'react';
-import { AiFillThunderbolt } from 'react-icons/ai';
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import Typography from '@material-ui/core/Typography';
 
+const useStyles = makeStyles(theme => ({
+    subtitle: {
+        paddingBottom: '10px'
+    }
+}));
 
 //Componente funcional para items de la lista de HeroesList
-const MyHero = ({heroName}) => (
-    
-    <h2><AiFillThunderbolt /> { heroName } </h2>
-);
+export default function MyHero (props) {
+    const classes = useStyles();
 
-MyHero.propTypes = {
-    heroName: PropTypes.string.isRequired
+    const isEmpty = (obj) => {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    };
+
+    let message = '';
+    if(!isEmpty(props.hero)){
+        message = 'My hero is ' + props.hero.name + '!';
+    }else{
+        message = 'Select a hero';
+    }
+
+    return (
+        <Typography className={classes.subtitle} variant="h5">
+            { message }
+        </Typography>
+    )
 }
 
-export default MyHero;
+MyHero.propTypes = {
+    heroName: PropTypes.object
+}
+
 
 
 

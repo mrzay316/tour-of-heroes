@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { saveHero, deleteHero } from '../actions';
+import { saveHero, deleteHero, setComponents } from '../actions';
 import HeroesList from '../components/HeroesList';
 import Dashboard from '../components/Dashboard';
 import HeroDetail from '../components/HeroDetail';
@@ -17,9 +17,7 @@ class TourOfHeroesContainer extends Component {
     constructor() {
         super();
         this.state = {
-            activeComponent: 'dashboard',
             editHero: { id: '', name: '', superpower: '', isFavorite: '' },
-            callingComponent: ''
         };
 
         this.handleViewDetailsClick = this.handleViewDetailsClick.bind(this);
@@ -29,21 +27,17 @@ class TourOfHeroesContainer extends Component {
 
     //Muestra el componente Dashboard
     handleDashboardButtonClick = () => {
-        let activeComponent = this.state.activeComponent;
+        let activeComponent = this.props.activeComponent;
         if (activeComponent !== 'dashboard') {
-            this.setState({
-                activeComponent: 'dashboard'
-            });
+            this.props.setComponents({activeComponent:'dashboard',callingComponent:''});
         }
     };
 
     //Muestra el componente HeroesList
     handleHeroesListButtonClick = () => {
-        let activeComponent = this.state.activeComponent;
+        let activeComponent = this.props.activeComponent;
         if (activeComponent !== 'heroes-list') {
-            this.setState({
-                activeComponent: 'heroes-list'
-            });
+            this.props.setComponents({activeComponent:'heroes-list',callingComponent:''});
         }
     }
 
@@ -51,12 +45,11 @@ class TourOfHeroesContainer extends Component {
     //sobre un heroe, se abra el componente de edición HeroDetail
     handleDashboardHeroClick = (heroId) => {
         let hero = this.props.heroesList.filter(hero => {
-            if (hero.id === heroId) return hero;
+            return  hero.id === heroId;
         });
+        this.props.setComponents({activeComponent:'hero-detail',callingComponent:'dashboard'});
         this.setState({
             editHero: hero[0],
-            callingComponent: 'dashboard',
-            activeComponent: 'hero-detail'
         });
     }
 
@@ -64,43 +57,39 @@ class TourOfHeroesContainer extends Component {
     //y se de click al boton Ver detalles, se abra el componente de edición HeroDetail
     handleViewDetailsClick = (heroId) => {
         let hero = this.props.heroesList.filter(hero => {
-            if (hero.id === heroId) return hero;
+            return hero.id === heroId;
         })
+        this.props.setComponents({activeComponent:'hero-detail',callingComponent:'heroes-list'});
         this.setState({
             editHero: hero[0],
-            callingComponent: 'heroes-list',
-            activeComponent: 'hero-detail'
         });
     }
 
     //Función que abre el componente HeroDetail para crear un heroe nuevo
     handleSaveHeroClick = () => {
+        this.props.setComponents({activeComponent:'hero-detail',callingComponent:'heroes-list'});
         this.setState({
-            editHero: { id: this.props.heroSequence, name: '', superpower: '', isFavorite: '' },
-            callingComponent: 'heroes-list',
-            activeComponent: 'hero-detail'
+            editHero: { id: this.props.heroSequence, name: '', superpower: '', isFavorite: '' }
         });
+        
     }
 
     //Función que se envía al componente hijo HeroDetail. El boton de atrás permite volver 
     // al componente desde el que se llamó (Dashboard o HeroList)
     handleBackButtonClick = () => {
-        let activeComponent = this.state.callingComponent;
+        let activeComponent = this.props.callingComponent;
+        this.props.setComponents({activeComponent: activeComponent, callingComponent:''});
         this.setState({
             editHero: { id: '', name: '', superpower: '', isFavorite: '' },
-            callingComponent: '',
-            activeComponent: activeComponent
         })
     }
 
     render() {
-        let activeComponent = this.state.activeComponent;
+        let activeComponent = this.props.activeComponent;
         let editHero = this.state.editHero;
         //Se construye la lista de heroes favoritos que se muestra en Dashboard
         let favoriteHeroes = this.props.heroesList.filter(hero => {
-            if (hero.isFavorite) {
-                return hero;
-            }
+            return hero.isFavorite;
         })
 
         //Función que determina que componente se encuentra activo (Dashboard,HeroList o HeroDetail)
@@ -146,9 +135,18 @@ class TourOfHeroesContainer extends Component {
 
 const mapDispatchToPropsActions = dispatch => ({
     saveHero: payload => dispatch(saveHero(payload)),
-    deleteHero: payload => dispatch(deleteHero(payload))
+    deleteHero: payload => dispatch(deleteHero(payload)),
+    setComponents: payload => dispatch(setComponents(payload))
 });
 
-const mapStateToProps = ({ heroesList, heroSequence }) => ({ heroesList, heroSequence });
+const mapStateToProps = ({ 
+    heroesList, 
+    heroSequence, 
+    callingComponent, 
+    activeComponent }) => ({ 
+        heroesList, 
+        heroSequence, 
+        callingComponent,
+        activeComponent });
 
 export default connect(mapStateToProps, mapDispatchToPropsActions)(TourOfHeroesContainer);

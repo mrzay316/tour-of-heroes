@@ -13,6 +13,11 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import MyHero from './MyHero';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -32,9 +37,26 @@ export default function HeroesList(props) {
     const classes = useStyles();
     const [search, setSearch] = useState('');
     const [selectedHero, setSelectedHero] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [heroToDelete, setHeroToDelete] = useState({});
 
     const handleListItemClick = (event, heroID) => {
         setSelectedHero(heroID);
+    };
+
+    const openConfirmationDialog = (hero) => {
+        setDeleteDialog(true);
+        setHeroToDelete(hero);
+    };
+
+    const handleCancel = () => {
+        setDeleteDialog(false);
+        setHeroToDelete({});
+    };
+    const handleDelete = () => {
+        setDeleteDialog(false);
+        props.onClickDeleteHero(heroToDelete.id);
+        setHeroToDelete({});
     };
 
     const displayViewDetailsButton = () => {
@@ -48,18 +70,33 @@ export default function HeroesList(props) {
         }
     }
 
+    const getSelectedHero = () => {
+        let hero = {};
+        if (selectedHero) {
+            let heroArr = props.heroes.filter(
+                (hero) => {
+                    return hero.id === selectedHero;
+                });
+            if (typeof heroArr[0] !== 'undefined') {
+                return heroArr[0];
+            } else {
+                return hero;
+            }
+        } else {
+            return hero;
+        }
+    }
+
     let filteredHeroes = props.heroes.filter(
         (hero) => {
             return hero.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
         });
-
-
     return (
         <Paper className={classes.root}>
-            <Typography className={classes.title} variant="h4">
+            <Typography className={classes.title} variant="h3">
                 My Heroes
             </Typography>
-
+            <MyHero hero = { getSelectedHero() } />
             <TextField
                 id="hero-filter"
                 label="Search for heroes"
@@ -78,7 +115,7 @@ export default function HeroesList(props) {
                             primary={hero.name}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton onClick={() => { props.onClickDeleteHero(hero.id) }} edge="end" aria-label="delete">
+                            <IconButton onClick={ () => {openConfirmationDialog(hero)} } edge="end" aria-label="delete">
                                 <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -86,6 +123,27 @@ export default function HeroesList(props) {
                 )}
             </List>
             {displayViewDetailsButton()}
+            <Dialog
+                disableBackdropClick
+                disableEscapeKeyDown
+                open={deleteDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Do you want to delete this hero?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={ handleCancel } color="primary" autoFocus>
+                        Cancel
+                    </Button>
+                    <Button onClick={ handleDelete } color="secondary" autoFocus>
+                        Yes
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Button
                 variant="contained"
                 color="primary"
@@ -100,4 +158,3 @@ HeroesList.propTypes = {
     heroes: PropTypes.array.isRequired,
     onClickViewDetails: PropTypes.func
 }
-

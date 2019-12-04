@@ -14,7 +14,9 @@ const initialState = {
         { id: 9, name: 'Magma', superpower: 'Ouch it burns!', isFavorite: false },
         { id: 10, name: 'Tornado', superpower: 'Becomes a tornado', isFavorite: false }
     ],
-    heroSequence : 11
+    heroSequence : 11,
+    activeComponent: 'dashboard',
+    callingComponent: ''
 }
 
 export const store = createStore(hero, initialState,

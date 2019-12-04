@@ -71,8 +71,8 @@ export default function HeroDetail(props) {
                 </div>
                 <div>
                     <FormControlLabel
-                        control={<Checkbox icon={<Star color="secondary"/>} 
-                        checkedIcon={<StarBorder color="secondary"/>} 
+                        control={<Checkbox icon={ heroDetail.isFavorite?<Star color="secondary"/>:<StarBorder color="secondary"/>} 
+                        checkedIcon={heroDetail.isFavorite?<Star color="secondary"/>:<StarBorder color="secondary"/>} 
                         value={heroDetail.isFavorite} />}
                         label="Favorite"
                         onChange={handleChangeIsFavorite}

@@ -1,10 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 
@@ -20,7 +18,9 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: '10px'
     },
     card: {
-        minWidth: 275,
+        '&:hover':{
+            background: '#e0e0e0',
+        }
     },
     cardTitle: {
         fontSize: 14,
@@ -40,8 +40,10 @@ export default function Dashboard(props) {
             {props.heroes.map(hero => {
                 return (
                     <Grid item xs={3} key={hero.id}>
-                        <Card className={classes.cardTitle}>
-                            <CardContent >
+                        <Card className={classes.card}>
+                            <CardContent 
+                                onClick={() => { props.onClickHero(hero.id) }}
+                            >
                                 <Typography variant="h5" component="h2">
                                     {hero.name} 
                                 </Typography>
@@ -49,11 +51,6 @@ export default function Dashboard(props) {
                                     {hero.superpower} 
                                 </Typography>
                             </CardContent>
-                            <CardActions>
-                                <Button 
-                                    onClick={() => { props.onClickHero(hero.id) }}
-                                    size="small">View details</Button>
-                            </CardActions>
                         </Card>
                     </Grid>
                 )})
