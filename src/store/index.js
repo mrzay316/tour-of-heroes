@@ -1,5 +1,8 @@
 import { createStore } from 'redux';
 import { hero } from '../reducers/hero';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
 
 const initialState = { 
     heroesList : [
@@ -19,5 +22,17 @@ const initialState = {
     callingComponent: ''
 }
 
-export const store = createStore(hero, initialState,
-window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const persistConfig = {
+    key: 'root',
+    storage,
+    blacklist: ['activeComponent','callingComponent']
+  }
+
+const persistedReducer = persistReducer(persistConfig, hero);
+
+export default function configureStore () {
+    let store = createStore(persistedReducer, initialState)
+       // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+    let persistor = persistStore(store);
+    return { store, persistor }
+  }

@@ -22,13 +22,20 @@ import MyHero from './MyHero';
 const useStyles = makeStyles(theme => ({
     root: {
         margin: 'auto',
-        width: '70%',
         maxWidth: 360,
-        padding: '15px',
+        padding: '25px',
         backgroundColor: theme.palette.background.paper,
     },
     title: {
         paddingBottom: '10px'
+    },
+    heroList: {
+        maxHeight: 340, 
+        overflow: 'auto',
+        margin: '20px'
+    },
+    button: {
+        margin: '5px'
     }
 }));
 
@@ -103,7 +110,7 @@ export default function HeroesList(props) {
                 variant="outlined"
                 onChange={(event) => { setSearch(event.target.value) }}
             />
-            <List >
+            <List className={classes.heroList}>
                 {filteredHeroes.map(hero =>
                     <ListItem
                         button
@@ -145,6 +152,7 @@ export default function HeroesList(props) {
                 </DialogActions>
             </Dialog>
             <Button
+                className= {classes.button}
                 variant="contained"
                 color="primary"
                 onClick={() => props.onClickSaveHero()}

@@ -9,8 +9,6 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-
-
 //Componente contenedor que maneja los estados de Redux
 //Llama a los componentes de presentación Dashboard, HeroesList y HeroDetail
 class TourOfHeroesContainer extends Component {

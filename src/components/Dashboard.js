@@ -34,7 +34,7 @@ export default function Dashboard(props) {
     return (
         <div className={classes.root}>
             <Typography className={classes.title} variant="h4"  >
-                Favorite Heroes
+                Favourite Heroes
             </Typography>
             <Grid container spacing={2}>
             {props.heroes.map(hero => {
